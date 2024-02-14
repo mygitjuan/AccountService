@@ -26,8 +26,10 @@ public class AccountsController {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<Account> save(@RequestBody Account newAcc) {
-        logger.info("newProduct:" + newAcc);
+        logger.info("newAcount:" + newAcc.toString());
         return new ResponseEntity<>(repo.save(newAcc), HttpStatus.CREATED);
     }
+
+
 
 }

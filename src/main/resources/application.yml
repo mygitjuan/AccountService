@@ -8,7 +8,7 @@
 spring:
   application:
     name: AccountsService
-  profiles.active: prod
+  profiles.active: dev
 
 ---
 spring:
