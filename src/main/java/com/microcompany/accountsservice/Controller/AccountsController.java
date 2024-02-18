@@ -44,7 +44,7 @@ public class AccountsController {
         if (id == account.getId()) {
             return new ResponseEntity<>(repo.save(account), HttpStatus.ACCEPTED);
         } else {
-            return new ResponseEntity<>(new StatusMessage(HttpStatus.PRECONDITION_FAILED.value(), "Id y produt.id deben cohincidir"), HttpStatus.PRECONDITION_FAILED);
+            return new ResponseEntity<>(new StatusMessage(HttpStatus.PRECONDITION_FAILED.value(), "Id y account.id deben cohincidir"), HttpStatus.PRECONDITION_FAILED);
         }
     }
 
@@ -59,5 +59,35 @@ public class AccountsController {
         repo.deleteAll();
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/balance/{accion}/{aid}")
+    public ResponseEntity<Object> addBalance(@PathVariable("accion") String accion, @PathVariable("aid") Long id, @RequestBody Account account) {
+        logger.info("Acción:" + accion.toString());
+        if (id == account.getId()) {
+            Account readAcc = repo.getReferenceById(id);
+            if (account.getOwnerId() == readAcc.getOwnerId()){
+                Integer  updBalance = 0;
+                if (accion.equals("add")){
+                    updBalance = readAcc.getBalance() + account.getBalance();
+                } else if (accion.equals("withdraw")) {
+                    updBalance = readAcc.getBalance() - account.getBalance();
+                } else {
+                    return new ResponseEntity<>(new StatusMessage(HttpStatus.PRECONDITION_FAILED.value(), "Opciones posibles: 'add' o 'withdraw'"), HttpStatus.PRECONDITION_FAILED);
+                }
+                readAcc.setBalance(updBalance);
+
+                logger.info("Cuenta enviada:" + account.toString());
+                logger.info("Cuenta modificada:" + readAcc.toString());
+                return new ResponseEntity<>(repo.save(readAcc), HttpStatus.ACCEPTED);
+            } else {
+                return new ResponseEntity<>(new StatusMessage(HttpStatus.PRECONDITION_FAILED.value(), "Owner y account.owner deben cohincidir"), HttpStatus.PRECONDITION_FAILED);
+            }
+        } else {
+            return new ResponseEntity<>(new StatusMessage(HttpStatus.PRECONDITION_FAILED.value(), "Id y account.id deben cohincidir"), HttpStatus.PRECONDITION_FAILED);
+        }
+    }
+
+
+
 
 }
